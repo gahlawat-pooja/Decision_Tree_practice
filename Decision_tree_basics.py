@@ -92,10 +92,8 @@ def _best_split(self, X, y):
     return best_split
                     
 
-### factorial fun (fibonacci heap  )
-# then git add
-# then git commit -m 'Factorial function completed'
-# then git push
+#6. factorial fun (fibonacci heap  )
+
 def fibonacci(n):
     if n == 0:
         return 0
@@ -106,7 +104,7 @@ def fibonacci(n):
 
 print(f'The {n}th fibonacci number is {fibonacci(n)}')
 
-# Build function
+#7. Build function
 def _build(self, X, y, depth=0):
     n_rows, n_cols = X.shape
 #check if a node should be a leaf node
