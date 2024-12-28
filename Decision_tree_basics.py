@@ -7,6 +7,9 @@ import gc
 
 # Node class to represent each node of the tree
 class Node:
+    '''
+    Helper class which implements a single tree node.
+    '''
     def __init__(self, feature=None, threshold=None, data_left=None, data_right=None, gain=None, value=None):
         self.feature = feature
         self.threshold = threshold
@@ -22,9 +25,7 @@ class DecisionTree:
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.root = None
-
-
-# Helper function to calculate entropy  
+    # Helper function to calculate entropy  
     def _entropy(s):
         counts = np.bincount(np.array(s, dtype=np.int64))
         ps = counts / len(s)
@@ -35,9 +36,8 @@ class DecisionTree:
             if p > 0:
                 entropy += np.sum[p * np.log2(p)]
         return -entropy 
-    
-    
-# Helper function to calculate Information Gain
+     
+    # Helper function to calculate Information Gain
     def _information_gain(self, parent, left_child, right_child):
         parent_entropy = self._entropy(parent)
         num_left= len(left_child)/ len(parent)
@@ -45,8 +45,7 @@ class DecisionTree:
         weighted_entropy = num_left * self._entropy(left_child) + num_right * self._entropy(right_child)
         return parent_entropy - weighted_entropy
 
-
-# Helper function to find the best split
+    # Helper function to find the best split
     def _best_split(self, X, y):
         best_split = {}
         best_info_gain = -1
@@ -87,16 +86,16 @@ class DecisionTree:
                             'gain': gain
                             }
             return best_split
-# Recursive function to build the tree
+    # Recursive function to build the tree
     def _build(self, X, y, depth=0):
         n_rows, n_cols = X.shape
-#check if a node should be a leaf node
+        #check if a node should be a leaf node
         if n_rows >= self.min_samples_split and depth < self.max_depth:
-    #if yes, calculate best split
+            #if yes, calculate best split
             best = self._best_split(X, y)
-    #if best split is not pure
+            #if best split is not pure
             if best['gain'] > 0:
-        #create left and right child
+                #create left and right child
                 left = self.build(
                     X=best['df_left'][:, :-1],
                     y=best['df_left'][:, -1],
@@ -107,7 +106,7 @@ class DecisionTree:
                     y=best['df_right'][:, -1],
                     depth=depth+1
                     )
-        #return the node with left and right child
+                #return the node with left and right child
                 return Node(
                     feature=best['feature'],
                     threshold=best['threshold'],
@@ -116,31 +115,31 @@ class DecisionTree:
                     gain=best['gain']
                     )
             else:       
-     #if best split is pure, return leaf node
+                #if best split is pure, return leaf node
                 return Node(value= counter(y).most_common(1)[0][0])
         
     def fit(self, X, y):
-    #call recursive function to build the tree
+        #call recursive function to build the tree
         self.root = self._build(X, y)
     
     def _predict(self, x, tree):
     
-    #leaf node
+        #leaf node
         if tree.value != None:
             return tree.value
         
         feature_value = x[tree.feature]  
-    #Go to the left
+        #Go to the left
         if feature_value <= tree.threshold:
             return self._predict(x=x, tree = tree.data_left)
         else:
-    #Go to the right
+        #Go to the right
             if feature_value > tree.threshold:
                 return self._predict(x=x, tree = tree.data_right)  
     
     
     def predict(self, X):
-    #call the _predict function
+        #call the _predict function
         return [self._predict(x, self.root) for x in X]   
                     
 
