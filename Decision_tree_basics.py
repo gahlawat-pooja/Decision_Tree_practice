@@ -26,6 +26,7 @@ class DecisionTree:
         self.min_samples_split = min_samples_split
         self.root = None
     # Helper function to calculate entropy  
+    @staticmethod
     def _entropy(s):
         counts = np.bincount(np.array(s, dtype=np.int64))
         ps = counts / len(s)
@@ -48,7 +49,7 @@ class DecisionTree:
     # Helper function to find the best split
     def _best_split(self, X, y):
         best_split = {}
-        best_info_gain = -1
+        best_gain = -1
         n_rows, n_cols = X.shape  #rows are samples, cols are features 
     
         #for every dataset feature
@@ -59,11 +60,6 @@ class DecisionTree:
                 df = np.concatenate((X, y.reshape(1, -1).T), axis=1) #axis=1 means concatenation happens along columns
                 left_child = df[df[:, f_idx] <= threshold]
                 right_child = df[df[:, f_idx] > threshold]
-                left_child_temp = np.array([row for row in df if row[f_idx] <= threshold])
-                right_child_temp = np.array([row for row in df if row[f_idx] > threshold])
-                assert (left_child== left_child_temp).all
-                assert (right_child== right_child_temp).all
-                del left_child_temp, right_child_temp
                 gc.collect()
                 
                 
@@ -71,8 +67,8 @@ class DecisionTree:
                 if len(left_child) > 0 and len(right_child) > 0:
                     
                     y = df[:, -1]
-                    y_left = df_left[:, -1]
-                    y_right = df_right[:, -1]
+                    y_left = left_child[:, -1]
+                    y_right = right_child[:, -1]
                     #calculate information gain
                     gain = self._information_gain(y, y_left, y_right)
                     #update best split if gain is higher than current best
@@ -81,8 +77,8 @@ class DecisionTree:
                         best_split = {
                             'feature': f_idx,
                             'threshold': threshold,
-                            'df_left': df_left,
-                            'df_right': df_right,
+                            'df_left': left_child,
+                            'df_right': right_child,
                             'gain': gain
                             }
             return best_split
@@ -91,21 +87,24 @@ class DecisionTree:
         n_rows, n_cols = X.shape
         #check if a node should be a leaf node
         if n_rows >= self.min_samples_split and depth < self.max_depth:
+            print(X.shape, y.shape)
             #if yes, calculate best split
             best = self._best_split(X, y)
             #if best split is not pure
-            if best['gain'] > 0:
+            if best and best['gain'] > 0:
                 #create left and right child
                 left = self._build(
                     X=best['df_left'][:, :-1],
                     y=best['df_left'][:, -1],
                     depth=depth+1
                     )
+                print('Left Finished')
                 right = self._build(
                     X=best['df_right'][:, :-1],
                     y=best['df_right'][:, -1],
                     depth=depth+1
                     )
+                print('Right Finished')
                 #return the node with left and right child
                 return Node(
                     feature=best['feature'],
@@ -114,10 +113,11 @@ class DecisionTree:
                     data_right=right,
                     gain=best['gain']
                     )
+            else:       
+                return Node(value= Counter(y).most_common(1)[0][0])
         else:       
-                #if best split is pure, return leaf node
-                return Node(value= counter(y).most_common(1)[0][0])
-        
+            #if best split is pure, return leaf node
+            return Node(value= Counter(y).most_common(1)[0][0])
     def fit(self, X, y):
         #call recursive function to build the tree
         self.root = self._build(X, y)
