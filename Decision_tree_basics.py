@@ -34,7 +34,7 @@ class DecisionTree:
         entropy= 0
         for p in ps:
             if p > 0:
-                entropy += np.sum[p * np.log2(p)]
+                entropy = entropy + p * np.log2(p)
         return -entropy 
      
     # Helper function to calculate Information Gain
@@ -96,12 +96,12 @@ class DecisionTree:
             #if best split is not pure
             if best['gain'] > 0:
                 #create left and right child
-                left = self.build(
+                left = self._build(
                     X=best['df_left'][:, :-1],
                     y=best['df_left'][:, -1],
                     depth=depth+1
                     )
-                right = self.build(
+                right = self._build(
                     X=best['df_right'][:, :-1],
                     y=best['df_right'][:, -1],
                     depth=depth+1
@@ -114,7 +114,7 @@ class DecisionTree:
                     data_right=right,
                     gain=best['gain']
                     )
-            else:       
+        else:       
                 #if best split is pure, return leaf node
                 return Node(value= counter(y).most_common(1)[0][0])
         
@@ -127,16 +127,16 @@ class DecisionTree:
         #leaf node
         if tree.value != None:
             return tree.value
-        
-        feature_value = x[tree.feature]  
-        #Go to the left
-        if feature_value <= tree.threshold:
-            return self._predict(x=x, tree = tree.data_left)
         else:
-        #Go to the right
-            if feature_value > tree.threshold:
-                return self._predict(x=x, tree = tree.data_right)  
-    
+            feature_value = x[tree.feature]  
+            #Go to the left
+            if feature_value <= tree.threshold:
+                return self._predict(x=x, tree = tree.data_left)
+            else:
+            #Go to the right
+                if feature_value > tree.threshold:
+                    return self._predict(x=x, tree = tree.data_right)  
+        
     
     def predict(self, X):
         #call the _predict function
