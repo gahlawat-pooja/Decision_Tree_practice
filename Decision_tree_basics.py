@@ -86,7 +86,7 @@ class DecisionTree:
     def _build(self, X, y, depth=0):
         n_rows, n_cols = X.shape
         #check if a node should be a leaf node
-        if n_rows >= self.min_samples_split and depth < self.max_depth:
+        if n_rows >= self.min_samples_split and depth <= self.max_depth:
             print(X.shape, y.shape)
             #if yes, calculate best split
             best = self._best_split(X, y)
