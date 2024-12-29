@@ -1,6 +1,6 @@
 #This file is recreated using the concept and code of decision tree from "Better Data Science" by  Dario Radečić.
 # Visit following website "Better Data Science" for original content and more details (https://betterdatascience.com/mml-decision-trees/)
-
+# row 117 to 120 of _build func (last rows) have 2 extra else statements than original code and also _predict function has two extra else statements just for understanding
 import numpy as np
 from collections import Counter
 import gc
@@ -81,7 +81,7 @@ class DecisionTree:
                             'df_right': right_child,
                             'gain': gain
                             }
-            return best_split
+        return best_split
     # Recursive function to build the tree
     def _build(self, X, y, depth=0):
         n_rows, n_cols = X.shape
