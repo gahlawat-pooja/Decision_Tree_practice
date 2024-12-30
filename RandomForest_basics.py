@@ -1,6 +1,3 @@
-# This file is recreated using the concept and code of decision tree from "Better Data Science" by  Dario Radečić.
-# Visit following website "Better Data Science" for original content and more details (https://betterdatascience.com/mml-decision-trees/)
-# row 117 to 120 of _build func (last rows) have 2 extra else statements than original code and also _predict function has two extra else statements just for understanding
 import numpy as np
 from collections import Counter
 import gc
@@ -54,36 +51,42 @@ class RandomForest:
         best_split = {}
         best_gain = -1
         n_rows, n_cols = X.shape  #rows are samples, cols are features 
-        subsampled_cols = np.random.choice(n_cols, int(n_cols * self.max_features), replace=False)
-        #for every dataset feature
-        for f_idx in subsampled_cols:
-            X_curr = X[:, f_idx]
-            #for every possible split
-            for threshold in np.unique(X_curr):
-                df = np.concatenate((X, y.reshape(1, -1).T), axis=1) #axis=1 means concatenation happens along columns
-                left_child = df[df[:, f_idx] <= threshold]
-                right_child = df[df[:, f_idx] > threshold]
-                gc.collect()
-                
-                
-                #do calculation only if there's data in both subset
-                if len(left_child) > 0 and len(right_child) > 0:
+        max_repeat_split = 2
+        for i_repeat_sub in range(max_repeat_split):
+            if i_repeat_sub == 0:
+                subsampled_cols = np.random.choice(n_cols, int(n_cols * self.max_features), replace=False)
+            else:
+                subsampled_cols = list(set(range(n_cols)) - set(subsampled_cols))    #for every dataset feature
+            for f_idx in subsampled_cols:
+                X_curr = X[:, f_idx]
+                #for every possible split
+                for threshold in np.unique(X_curr):
+                    df = np.concatenate((X, y.reshape(1, -1).T), axis=1) #axis=1 means concatenation happens along columns
+                    left_child = df[df[:, f_idx] <= threshold]
+                    right_child = df[df[:, f_idx] > threshold]
+                    gc.collect()
                     
-                    y = df[:, -1]
-                    y_left = left_child[:, -1]
-                    y_right = right_child[:, -1]
-                    #calculate information gain
-                    gain = self._information_gain(y, y_left, y_right)
-                    #update best split if gain is higher than current best
-                    if gain > best_gain:
-                        best_gain = gain
-                        best_split = {
-                            'feature': f_idx,
-                            'threshold': threshold,
-                            'df_left': left_child,
-                            'df_right': right_child,
-                            'gain': gain
-                            }
+                    
+                    #do calculation only if there's data in both subset
+                    if len(left_child) > 0 and len(right_child) > 0:
+                        
+                        y = df[:, -1]
+                        y_left = left_child[:, -1]
+                        y_right = right_child[:, -1]
+                        #calculate information gain
+                        gain = self._information_gain(y, y_left, y_right)
+                        #update best split if gain is higher than current best
+                        if gain > best_gain:
+                            best_gain = gain
+                            best_split = {
+                                'feature': f_idx,
+                                'threshold': threshold,
+                                'df_left': left_child,
+                                'df_right': right_child,
+                                'gain': gain
+                                }
+            if best_split:
+                break
         return best_split
     # Recursive function to build the tree
     def _build(self, X, y, depth=0):
