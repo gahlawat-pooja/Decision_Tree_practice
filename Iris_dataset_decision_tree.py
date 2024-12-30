@@ -10,31 +10,30 @@ import gc  #garbage collector
 iris = load_iris()
 X = iris.data  # Features
 y = iris.target  # Target labels
+model_dict= {}
 
-def train_and_evaluate_decision_tree(X, y, k):
-    kf = KFold(n_splits=k, shuffle=True) # (random_state=32) to fix the seed value
+def train_and_evaluate_decision_tree(X, y, k): 
+    kf = KFold(n_splits=k, shuffle=True, random_state=0) # (random_state=32) to fix the seed value
     accuracy_scores = []
 
-    for train_index, test_index in kf.split(X):
+    for fold_i, (train_index, test_index) in enumerate(kf.split(X)):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
         # Create and train the decision tree classifier
         clf = DecisionTree()
         clf.fit(X_train, y_train)
-
-        # Make predictions on the test set
-        y_pred = clf.predict(X_test)
-        
-        #Clean up memory
+        model_dict[f'model_{fold_i}']=clf
         del clf
         gc.collect()
+        # Make predictions on the test set
+        y_pred = model_dict[f'model_{fold_i}'].predict(X_test)
         
         # Calculate accuracy
         accuracy = accuracy_score(y_test, y_pred)
         accuracy_scores.append(accuracy)
         print(accuracy_scores)
-
+    print(model_dict)
     return accuracy_scores
 
 # Example usage:
