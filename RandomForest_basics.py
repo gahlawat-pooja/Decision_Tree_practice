@@ -19,12 +19,13 @@ class Node:
         self.value = value
     
 
-# Decision Tree class
-class DecisionTree:
-    def __init__(self, max_depth= 3, min_samples_split=2):
+# Random Forest class
+class RandomForest:
+    def __init__(self, max_depth= 3, min_samples_split=2, n_estimators=10):
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
-        self.root = None
+        self.n_estimators = n_estimators
+        self.root_dict = {}
     # Helper function to calculate entropy  
     @staticmethod
     def _entropy(s):
@@ -88,7 +89,7 @@ class DecisionTree:
         n_rows, n_cols = X.shape
         #check if a node should be a leaf node
         if n_rows >= self.min_samples_split and depth <= self.max_depth:
-            print(X.shape, y.shape)
+            # print(X.shape, y.shape)
             #if yes, calculate best split
             best = self._best_split(X, y)
             #if best split is not pure
@@ -99,13 +100,13 @@ class DecisionTree:
                     y=best['df_left'][:, -1],
                     depth=depth+1
                     )
-                print('Left Finished')
+                # print('Left Finished')
                 right = self._build(
                     X=best['df_right'][:, :-1],
                     y=best['df_right'][:, -1],
                     depth=depth+1
                     )
-                print('Right Finished')
+                # print('Right Finished')
                 #return the node with left and right child
                 return Node(
                     feature=best['feature'],
@@ -121,7 +122,10 @@ class DecisionTree:
             return Node(value= y)
     def fit(self, X, y):
         #call recursive function to build the tree
-        self.root = self._build(X, y)
+        print('n_estimators Total : ', self.n_estimators)
+        for estimator_i in range(self.n_estimators):
+            self.root_dict[estimator_i] = self._build(X, y)
+            print(f'{estimator_i} estimator finished training')
     
     def _predict(self, x, tree):
     
@@ -141,7 +145,7 @@ class DecisionTree:
     
     def predict(self, X):
         #call the _predict function
-        return [self._predict(x, self.root) for x in X]   
+        return [self._predict(x, self.root_dict[0]) for x in X]   
                     
 
 
