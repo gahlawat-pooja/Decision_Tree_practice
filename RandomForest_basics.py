@@ -21,10 +21,11 @@ class Node:
 
 # Random Forest class
 class RandomForest:
-    def __init__(self, max_depth= 3, min_samples_split=2, n_estimators=10):
+    def __init__(self, max_depth= 3, min_samples_split=2, n_estimators=10, max_features = 0.66):
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
         self.n_estimators = n_estimators
+        self.max_features = max_features
         self.root_dict = {}
     # Helper function to calculate entropy  
     @staticmethod
@@ -53,9 +54,9 @@ class RandomForest:
         best_split = {}
         best_gain = -1
         n_rows, n_cols = X.shape  #rows are samples, cols are features 
-    
+        subsampled_cols = np.random.choice(n_cols, int(n_cols * self.max_features), replace=False)
         #for every dataset feature
-        for f_idx in range(n_cols):
+        for f_idx in subsampled_cols:
             X_curr = X[:, f_idx]
             #for every possible split
             for threshold in np.unique(X_curr):
