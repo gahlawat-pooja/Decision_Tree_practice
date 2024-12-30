@@ -124,7 +124,12 @@ class RandomForest:
         #call recursive function to build the tree
         print('n_estimators Total : ', self.n_estimators)#print total no. of trees 
         for estimator_i in range(self.n_estimators): #loop that will iterate through the specified number of trees
-            self.root_dict[estimator_i] = self._build(X, y) #This dictionary is used to store the root nodes of all the trees in the forest
+                    # Sample X and y with replacement (bootstrap sampling)
+            indices = np.random.choice(len(X), size=len(X), replace=True)
+            X_sample = X[indices]
+            y_sample = y[indices]
+            assert X.shape[0]== X_sample.shape[0]
+            self.root_dict[estimator_i] = self._build(X_sample, y_sample) #This dictionary is used to store the root nodes of all the trees in the forest
             print(f'{estimator_i} estimator finished training')
     
     def _predict(self, x, tree):
