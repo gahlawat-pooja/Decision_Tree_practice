@@ -122,16 +122,16 @@ class RandomForest:
             return Node(value= y)
     def fit(self, X, y):
         #call recursive function to build the tree
-        print('n_estimators Total : ', self.n_estimators)
-        for estimator_i in range(self.n_estimators):
-            self.root_dict[estimator_i] = self._build(X, y)
+        print('n_estimators Total : ', self.n_estimators)#print total no. of trees 
+        for estimator_i in range(self.n_estimators): #loop that will iterate through the specified number of trees
+            self.root_dict[estimator_i] = self._build(X, y) #This dictionary is used to store the root nodes of all the trees in the forest
             print(f'{estimator_i} estimator finished training')
     
     def _predict(self, x, tree):
     
         #leaf node
         if tree.value is not None:
-            return Counter(tree.value).most_common(1)[0][0]
+            return tree.value  # If the node is a leaf, return all labels in this leaf directly
         else:
             feature_value = x[tree.feature]  
             #Go to the left
@@ -141,11 +141,19 @@ class RandomForest:
             #Go to the right
                 if feature_value > tree.threshold:
                     return self._predict(x=x, tree = tree.data_right)  
+    # This function predicts class labels for single data point 'x' using ensemble
+    def _ensemble_predict(self, x, ensemble_dict):
+        tree_predictions = []
+        for estimator_i in range(self.n_estimators):
+            tree_predictions.append(self._predict(x=x, tree=ensemble_dict[estimator_i]))
+        # concatenated all as one numpy vector
+        tree_predictions = np.concatenate(tree_predictions)
+        return Counter(tree_predictions).most_common(1)[0][0]
+
         
-    
     def predict(self, X):
-        #call the _predict function
-        return [self._predict(x, self.root_dict[0]) for x in X]   
+        #Predict the class label for each data point in 'X' using the ensemble 
+        return [self._ensemble_predict(x, self.root_dict) for x in X]   
                     
 
 
