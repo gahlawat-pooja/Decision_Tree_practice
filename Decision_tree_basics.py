@@ -1,4 +1,4 @@
-#This file is recreated using the concept and code of decision tree from "Better Data Science" by  Dario Radečić.
+# This file is recreated using the concept and code of decision tree from "Better Data Science" by  Dario Radečić.
 # Visit following website "Better Data Science" for original content and more details (https://betterdatascience.com/mml-decision-trees/)
 # row 117 to 120 of _build func (last rows) have 2 extra else statements than original code and also _predict function has two extra else statements just for understanding
 import numpy as np
@@ -45,6 +45,7 @@ class DecisionTree:
         num_right = len(right_child)/ len(parent)
         weighted_entropy = num_left * self._entropy(left_child) + num_right * self._entropy(right_child)
         return parent_entropy - weighted_entropy
+        
 
     # Helper function to find the best split
     def _best_split(self, X, y):
@@ -114,10 +115,10 @@ class DecisionTree:
                     gain=best['gain']
                     )
             else:       
-                return Node(value= Counter(y).most_common(1)[0][0])
+                return Node(value= y)
         else:       
             #if best split is pure, return leaf node
-            return Node(value= Counter(y).most_common(1)[0][0])
+            return Node(value= y)
     def fit(self, X, y):
         #call recursive function to build the tree
         self.root = self._build(X, y)
@@ -125,8 +126,8 @@ class DecisionTree:
     def _predict(self, x, tree):
     
         #leaf node
-        if tree.value != None:
-            return tree.value
+        if tree.value is not None:
+            return Counter(tree.value).most_common(1)[0][0]
         else:
             feature_value = x[tree.feature]  
             #Go to the left
