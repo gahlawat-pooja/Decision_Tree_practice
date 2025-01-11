@@ -1,6 +1,13 @@
-# This file is recreated using the concept and code of decision tree from "Better Data Science" by  Dario Radečić.
-# Visit following website "Better Data Science" for original content and more details (https://betterdatascience.com/mml-decision-trees/)
-# row 117 to 120 of _build func (last rows) have 2 extra else statements than original code and also _predict function has two extra else statements just for understanding
+'''
+This code tries to recreate code from following paper: 
+    Jain, Vikas, Ashish Phophalia, and Jignesh S. Bhatt. 
+    "Investigation of a joint splitting criteria for decision tree classifier use of information gain and gini index." 
+    In TENCON 2018-2018 IEEE Region 10 Conference, pp. 2187-2192. IEEE, 2018.
+
+While for Initial Decision Tree, the code is recreated using the concept and code of decision tree from "Better Data Science" by  Dario Radečić.
+ Visit following website "Better Data Science" for original content and more details (https://betterdatascience.com/mml-decision-trees/)
+ row 117 to 120 of _build func (last rows) have 2 extra else statements than original code and also _predict function has two extra else statements just for understanding
+ '''
 import numpy as np
 from collections import Counter
 import gc
