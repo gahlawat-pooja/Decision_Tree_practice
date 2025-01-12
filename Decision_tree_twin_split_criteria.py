@@ -28,9 +28,10 @@ class Node:
 
 # Decision Tree class
 class DecisionTree:
-    def __init__(self, max_depth= 3, min_samples_split=2):
+    def __init__(self, max_depth= 3, min_samples_split=2, alpha=0.5):
         self.max_depth = max_depth
         self.min_samples_split = min_samples_split
+        self.alpha = alpha
         self.root = None
     # Helper function to calculate entropy  
     @staticmethod
@@ -44,6 +45,14 @@ class DecisionTree:
             if p > 0:
                 entropy = entropy + p * np.log2(p)
         return -entropy 
+    
+    @staticmethod
+    def _gini(s):
+        counts = np.bincount(np.array(s, dtype=np.int64))
+        ps = counts / len(s)
+        gini = 1 - np.sum(ps**2)
+        return gini
+        
      
     # Helper function to calculate Information Gain
     def _information_gain(self, parent, left_child, right_child):
@@ -53,11 +62,22 @@ class DecisionTree:
         weighted_entropy = num_left * self._entropy(left_child) + num_right * self._entropy(right_child)
         return parent_entropy - weighted_entropy
         
+    # Helper function to calculate Gini impurity
+    def _gini_impurity(self, parent, left_child, right_child):
+        num_left = len(left_child) / len(parent)
+        num_right = len(right_child) / len(parent)
+        weighted_gini = num_left * self._gini(left_child) + num_right * self._gini(right_child)
+        return weighted_gini
+    
+    def _joint_split_criterion(self, parent, left_child, right_child):
+        info_gain = self._information_gain(parent, left_child, right_child)
+        gini_impurity = self._gini_impurity(parent, left_child, right_child)
+        return self.alpha * info_gain + (1 - self.alpha) * (1 - gini_impurity)
 
     # Helper function to find the best split
     def _best_split(self, X, y):
         best_split = {}
-        best_gain = -1
+        best_split_quality = -1
         n_rows, n_cols = X.shape  #rows are samples, cols are features 
     
         #for every dataset feature
@@ -77,19 +97,20 @@ class DecisionTree:
                     y = df[:, -1]
                     y_left = left_child[:, -1]
                     y_right = right_child[:, -1]
-                    #calculate information gain
-                    gain = self._information_gain(y, y_left, y_right)
+                    
+                    split_quality = self._joint_split_criterion(y, y_left, y_right)
                     #update best split if gain is higher than current best
-                    if gain > best_gain:
-                        best_gain = gain
+                    if split_quality > best_split_quality:
+                        best_split_quality = split_quality
                         best_split = {
                             'feature': f_idx,
                             'threshold': threshold,
                             'df_left': left_child,
                             'df_right': right_child,
-                            'gain': gain
+                            'gain': split_quality
+                              
                             }
-        return best_split
+        return best_split if best_split_quality > 0 else None
     # Recursive function to build the tree
     def _build(self, X, y, depth=0):
         n_rows, n_cols = X.shape
