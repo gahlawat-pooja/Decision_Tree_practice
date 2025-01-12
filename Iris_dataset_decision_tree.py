@@ -2,7 +2,7 @@
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from RandomForest_basics import Node, RandomForest  # Ensure this module is available
+from Decision_tree_twin_split_criteria import DecisionTree
 from sklearn.model_selection import KFold
 import gc  #garbage collector
 
@@ -21,7 +21,7 @@ def train_and_evaluate_decision_tree(X, y, k):
         y_train, y_test = y[train_index], y[test_index]
 
         # Create and train the decision tree classifier
-        clf = RandomForest(n_estimators = 5)
+        clf = DecisionTree(alpha= 0.9 - 0.1*fold_i)
         clf.fit(X_train, y_train)
         model_dict[f'model_{fold_i}']=clf
         del clf
