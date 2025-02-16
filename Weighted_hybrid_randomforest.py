@@ -5,24 +5,24 @@ import random
 
 # Node class to represent each node of the tree
 class Node:
-    """
+    '''
     Helper class which implements a single tree node.
-    """
+    '''
     def __init__(self, feature=None, threshold=None, data_left=None, data_right=None, gain=None, value=None):
-        self.feature = feature            # Index of the feature used for splitting at this node.
-        self.threshold = threshold        # Threshold value for the split.
-        self.data_left = data_left        # Left child (subtree) when the feature's value is <= threshold.
-        self.data_right = data_right      # Right child (subtree) when the feature's value is > threshold.
-        self.gain = gain                  # The split gain (quality of the split).
-        self.value = value                # Holds target values if this node is a leaf.
+        self.feature = feature            
+        self.threshold = threshold        
+        self.data_left = data_left        
+        self.data_right = data_right      
+        self.gain = gain                  
+        self.value = value                
 
 # Random Forest with Hybrid Decision Tree Model
 class RandomForest:
     def __init__(self, max_depth=3, min_samples_split=2, n_estimators=10, max_features=0.66, hybrid_split=True, weighted_voting=True):
-        self.max_depth = max_depth                   # Maximum depth of each tree.
-        self.min_samples_split = min_samples_split   # Minimum samples required to split a node.
-        self.n_estimators = n_estimators             # Number of trees in the forest.
-        self.max_features = max_features             # Fraction of features to consider for the split.
+        self.max_depth = max_depth                  
+        self.min_samples_split = min_samples_split   
+        self.n_estimators = n_estimators            
+        self.max_features = max_features             
         self.hybrid_split = hybrid_split             # Enable hybrid split (gini, entropy, gain ratio).
         self.weighted_voting = weighted_voting       # Enable weighted voting based on OOB error.
         self.root_dict = {}                          # Dictionary to store each tree's root.
