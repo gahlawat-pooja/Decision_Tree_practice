@@ -1,3 +1,15 @@
+'''
+
+This implementation is inspired by the research paper:
+"Weighted Hybrid Decision Tree Model for Random Forest Classifier" by Vrushali Y. Kulkarni, Pradeep K. Sinha, and Manisha C. Petare.
+The approach and methodology are referenced from the paper, but the implementation is written from scratch.
+
+The Random Forest with Hybrid Decision Tree Model is a modification of the traditional Random Forest algorithm.
+The model uses a hybrid split criterion for decision tree nodes, which randomly selects one of three measures: Gini Index, Entropy, or Gain Ratio.
+The model also incorporates weighted voting based on Out-of-Bag (OOB) error to improve the accuracy of the ensemble predictions.
+
+'''
+
 import numpy as np
 from collections import Counter
 import gc
